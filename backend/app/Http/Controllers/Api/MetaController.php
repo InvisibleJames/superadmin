@@ -15,10 +15,19 @@ class MetaController extends Controller
      */
     public function index(): JsonResponse
     {
+        $provinces = Clinic::query()
+            ->whereNotNull('province')
+            ->distinct()
+            ->orderBy('province')
+            ->pluck('province')
+            ->map(fn ($p) => ['value' => $p, 'label' => $p])
+            ->values();
+
         return response()->json([
             'roles' => Role::orderBy('level')->get(['id', 'name', 'hue']),
             'clinics' => Clinic::orderBy('name')->get(['id', 'name']),
             'branches' => Branch::orderBy('name')->get(['id', 'name', 'clinic_id']),
+            'provinces' => $provinces,
             'statuses' => [
                 ['value' => 'all', 'label' => 'All'],
                 ['value' => 'active', 'label' => 'Active'],
