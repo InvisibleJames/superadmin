@@ -2,6 +2,8 @@
 definePageMeta({ layout: false })
 
 const auth = useAuthStore()
+const route = useRoute()
+const config = useRuntimeConfig()
 
 type Mode = 'signin' | 'forgot' | 'sent'
 const mode = ref<Mode>('signin')
@@ -13,6 +15,30 @@ const error = ref('')
 
 const forgotLoading = ref(false)
 const forgotError = ref('')
+
+// Origin of the Laravel app (apiBase without the trailing /api).
+const backendOrigin = computed(() => config.public.apiBase.replace(/\/api\/?$/, ''))
+
+// Surface SSO failures handed back via ?error=... on the login URL.
+const ssoErrors: Record<string, string> = {
+  oauth_unconfigured: 'Google sign-in is not configured yet. Contact your administrator.',
+  oauth_denied: 'Google sign-in was cancelled.',
+  oauth_state: 'Your sign-in session expired. Please try again.',
+  oauth_no_code: 'Google sign-in did not complete. Please try again.',
+  oauth_token: 'Could not verify your Google sign-in. Please try again.',
+  oauth_no_email: 'Your Google account did not return an email address.',
+  oauth_domain: 'Your email domain is not allowed to access this console.',
+  oauth_no_account: 'No admin account matches that Google email.',
+  oauth_inactive: 'This account is inactive. Contact an administrator.',
+}
+onMounted(() => {
+  const e = String(route.query.error ?? '')
+  if (e && ssoErrors[e]) error.value = ssoErrors[e]
+})
+
+function onGoogle() {
+  window.location.href = `${backendOrigin.value}/auth/oauth/redirect`
+}
 
 async function onLogin() {
   error.value = ''
@@ -103,6 +129,21 @@ async function onSendReset() {
               </MButton>
             </div>
           </form>
+
+          <!-- SSO: Google via Authentik -->
+          <div class="med-or">
+            <span>or</span>
+          </div>
+          <button type="button" class="med-google" @click="onGoogle">
+            <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+              <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8a12 12 0 1 1 7.9-21.1l5.7-5.7A20 20 0 1 0 44 24c0-1.2-.1-2.4-.4-3.5z" />
+              <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8A12 12 0 0 1 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7A20 20 0 0 0 6.3 14.7z" />
+              <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2A12 12 0 0 1 12.7 28l-6.5 5C9.6 39.6 16.3 44 24 44z" />
+              <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3a12 12 0 0 1-4.1 5.6l6.2 5.2C39 35.6 44 30.5 44 24c0-1.2-.1-2.4-.4-3.5z" />
+            </svg>
+            <span>Continue with Google</span>
+          </button>
+          <p class="med-sso-note">Secured by Authentik · Google Authentication</p>
         </template>
 
         <template v-else-if="mode === 'forgot'">
@@ -192,6 +233,55 @@ async function onSendReset() {
   box-shadow: var(--shadow-lg);
   padding: 32px;
 }
+.med-or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 16px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+}
+.med-or::before,
+.med-or::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-subtle);
+}
+.med-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--inset-top);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background var(--dur) var(--ease-out),
+    border-color var(--dur) var(--ease-out);
+}
+.med-google:hover {
+  background: var(--surface-active);
+  border-color: var(--border-strong);
+}
+.med-google:active {
+  transform: translateY(0.5px) scale(0.99);
+}
+.med-sso-note {
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--text-tertiary);
+}
+
 @media (max-width: 860px) {
   .med-login__brand {
     display: none;

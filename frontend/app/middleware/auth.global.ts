@@ -7,7 +7,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const token = useCookie<string | null>('medreco_token')
 
   // Pages reachable without authentication.
-  const publicPaths = ['/login', '/reset-password']
+  const publicPaths = ['/login', '/reset-password', '/auth/callback']
   const isPublic = publicPaths.includes(to.path)
 
   // Load the current user once if we have a token but no user in memory.

@@ -35,4 +35,25 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Authentik (OIDC) — SSO broker for Google sign-in
+    |--------------------------------------------------------------------------
+    |
+    | Admins sign in with Google through a self-hosted Authentik instance that
+    | brokers the Google OAuth source. Our app is a standard OIDC client of
+    | Authentik. See docs/authentik-setup.md for provisioning steps.
+    |
+    */
+    'authentik' => [
+        'base_url' => rtrim((string) env('AUTHENTIK_BASE_URL', ''), '/'),
+        'client_id' => env('AUTHENTIK_CLIENT_ID'),
+        'client_secret' => env('AUTHENTIK_CLIENT_SECRET'),
+        'redirect' => env('AUTHENTIK_REDIRECT_URI', env('APP_URL') . '/auth/oauth/callback'),
+        // Auto-provision a (non-super) admin account on first SSO login.
+        'auto_create' => (bool) env('AUTH_OAUTH_AUTO_CREATE', false),
+        // Optional comma-separated email-domain allowlist (e.g. "medreco.com").
+        'allowed_domains' => array_filter(array_map('trim', explode(',', (string) env('AUTH_OAUTH_ALLOWED_DOMAINS', '')))),
+    ],
+
 ];
