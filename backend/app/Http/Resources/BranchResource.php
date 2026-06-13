@@ -16,6 +16,7 @@ class BranchResource extends JsonResource
             'province' => $this->province,
             'district' => $this->district,
             'subdistrict' => $this->subdistrict,
+            'postal_code' => $this->postal_code,
             'phone' => $this->phone,
             'status' => $this->status,
             'clinic' => $this->whenLoaded('clinic', fn () => $this->clinic ? [

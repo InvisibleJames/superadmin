@@ -124,6 +124,7 @@ class ClinicController extends Controller
             'province' => ['nullable', 'string', 'max:255'],
             'district' => ['nullable', 'string', 'max:255'],
             'subdistrict' => ['nullable', 'string', 'max:255'],
+            'postal_code' => ['nullable', 'string', 'max:10'],
             'status' => ['required', Rule::in(['active', 'inactive'])],
         ]);
     }

@@ -17,6 +17,7 @@ class ClinicResource extends JsonResource
             'province' => $this->province,
             'district' => $this->district,
             'subdistrict' => $this->subdistrict,
+            'postal_code' => $this->postal_code,
             'status' => $this->status,
             'branches_count' => $this->branches_count ?? $this->branches()->count(),
             'patients_count' => $this->patients_count ?? $this->patients()->count(),

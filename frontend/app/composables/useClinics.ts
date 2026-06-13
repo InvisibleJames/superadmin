@@ -6,6 +6,7 @@ export interface ClinicRow {
   province: string | null
   district: string | null
   subdistrict: string | null
+  postal_code: string | null
   status: 'active' | 'inactive'
   branches_count: number
   patients_count: number

@@ -1,46 +1,49 @@
 <script setup lang="ts">
-import { TH_PROVINCES, districtsOf, subdistrictsOf } from '~/utils/thai-address'
-
 export interface ThaiAddress {
   province: string | null
   district: string | null
   subdistrict: string | null
+  postal_code: string | null
 }
 
 const props = defineProps<{ modelValue: ThaiAddress }>()
 const emit = defineEmits<{ 'update:modelValue': [v: ThaiAddress] }>()
 
-const v = computed<ThaiAddress>(() => props.modelValue ?? { province: null, district: null, subdistrict: null })
+const geo = useThaiGeo()
+onMounted(() => geo.load())
+
+const v = computed<ThaiAddress>(
+  () => props.modelValue ?? { province: null, district: null, subdistrict: null, postal_code: null },
+)
 
 const provinceOptions = computed(() => [
-  { value: '', label: '— เลือกจังหวัด —' },
-  ...TH_PROVINCES.map((p) => ({ value: p, label: p })),
+  { value: '', label: geo.loaded.value ? '— เลือกจังหวัด —' : 'กำลังโหลด…' },
+  ...geo.provinces.value.map((p) => ({ value: p, label: p })),
 ])
 const districtOptions = computed(() => {
-  const list = v.value.province ? districtsOf(v.value.province) : []
+  const list = geo.districtsOf(v.value.province)
   return [
     { value: '', label: v.value.province ? '— เลือกอำเภอ/เขต —' : 'เลือกจังหวัดก่อน' },
     ...list.map((d) => ({ value: d, label: d })),
   ]
 })
 const subOptions = computed(() => {
-  const list = v.value.district ? subdistrictsOf(v.value.district) : []
-  const placeholder = !v.value.district
-    ? 'เลือกอำเภอก่อน'
-    : list.length
-      ? '— เลือกตำบล/แขวง —'
-      : '— ไม่มีข้อมูลตำบล —'
-  return [{ value: '', label: placeholder }, ...list.map((t) => ({ value: t, label: t }))]
+  const list = geo.subdistrictsOf(v.value.province, v.value.district)
+  return [
+    { value: '', label: v.value.district ? '— เลือกตำบล/แขวง —' : 'เลือกอำเภอก่อน' },
+    ...list.map((s) => ({ value: s.name, label: s.name })),
+  ]
 })
 
 function setProvince(val: string) {
-  emit('update:modelValue', { province: val || null, district: null, subdistrict: null })
+  emit('update:modelValue', { province: val || null, district: null, subdistrict: null, postal_code: null })
 }
 function setDistrict(val: string) {
-  emit('update:modelValue', { ...v.value, district: val || null, subdistrict: null })
+  emit('update:modelValue', { ...v.value, district: val || null, subdistrict: null, postal_code: null })
 }
 function setSub(val: string) {
-  emit('update:modelValue', { ...v.value, subdistrict: val || null })
+  const zip = geo.zipOf(v.value.province, v.value.district, val)
+  emit('update:modelValue', { ...v.value, subdistrict: val || null, postal_code: zip || null })
 }
 </script>
 
@@ -58,6 +61,10 @@ function setSub(val: string) {
       <label>ตำบล / แขวง</label>
       <MSelect :model-value="v.subdistrict ?? ''" :options="subOptions" @update:model-value="setSub" />
     </div>
+    <div class="med-field">
+      <label>รหัสไปรษณีย์</label>
+      <input class="med-zip" :value="v.postal_code ?? ''" readonly placeholder="—" />
+    </div>
   </div>
 </template>
 
@@ -65,7 +72,7 @@ function setSub(val: string) {
 .med-addr {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr 1fr 120px;
   gap: 16px;
 }
 .med-addr :deep(.med-select) {
@@ -76,9 +83,20 @@ function setSub(val: string) {
 .med-addr :deep(select) {
   width: 100%;
 }
-@media (max-width: 560px) {
+.med-zip {
+  height: 38px;
+  padding: 0 12px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  outline: none;
+}
+@media (max-width: 700px) {
   .med-addr {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 }
 </style>

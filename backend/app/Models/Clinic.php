@@ -10,7 +10,7 @@ class Clinic extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['code', 'no', 'name', 'province', 'district', 'subdistrict', 'status'];
+    protected $fillable = ['code', 'no', 'name', 'province', 'district', 'subdistrict', 'postal_code', 'status'];
 
     public function branches(): HasMany
     {

@@ -5,6 +5,7 @@ export interface BranchRow {
   province: string | null
   district: string | null
   subdistrict: string | null
+  postal_code: string | null
   phone: string | null
   status: 'active' | 'inactive'
   clinic?: { id: number; name: string } | null

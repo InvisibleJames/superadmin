@@ -13,18 +13,24 @@ const isEdit = computed(() => !!props.record)
 const saving = ref(false)
 const errors = ref<string[]>([])
 
-const form = reactive({ name: '', code: '', clinic_id: '' as string | number, province: '', district: '', subdistrict: '', phone: '', status: 'active' })
+const form = reactive({ name: '', code: '', clinic_id: '' as string | number, province: '', district: '', subdistrict: '', postal_code: '', phone: '', status: 'active' })
 
 const clinicOptions = computed(() => [
   { value: '', label: '— เลือกคลินิก —' },
   ...props.clinics.map((c) => ({ value: c.id, label: c.name })),
 ])
 
-const address = computed(() => ({ province: form.province || null, district: form.district || null, subdistrict: form.subdistrict || null }))
-function onAddress(a: { province: string | null; district: string | null; subdistrict: string | null }) {
+const address = computed(() => ({
+  province: form.province || null,
+  district: form.district || null,
+  subdistrict: form.subdistrict || null,
+  postal_code: form.postal_code || null,
+}))
+function onAddress(a: { province: string | null; district: string | null; subdistrict: string | null; postal_code: string | null }) {
   form.province = a.province ?? ''
   form.district = a.district ?? ''
   form.subdistrict = a.subdistrict ?? ''
+  form.postal_code = a.postal_code ?? ''
 }
 
 watch(
@@ -39,6 +45,7 @@ watch(
     form.province = r?.province ?? ''
     form.district = r?.district ?? ''
     form.subdistrict = r?.subdistrict ?? ''
+    form.postal_code = r?.postal_code ?? ''
     form.phone = r?.phone ?? ''
     form.status = r?.status ?? 'active'
   },
@@ -56,6 +63,7 @@ async function onSave() {
         province: form.province || null,
         district: form.district || null,
         subdistrict: form.subdistrict || null,
+        postal_code: form.postal_code || null,
         phone: form.phone || null,
         status: form.status,
       },
