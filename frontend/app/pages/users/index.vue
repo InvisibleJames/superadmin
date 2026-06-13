@@ -5,6 +5,19 @@ const u = useUsers()
 const ready = ref(false)
 const rowsMenuOpen = ref(false)
 
+const formOpen = ref(false)
+const editRecord = ref<UserRow | null>(null)
+const bulkOpen = ref(false)
+
+function openAdd() {
+  editRecord.value = null
+  formOpen.value = true
+}
+function openEdit(row: UserRow) {
+  editRecord.value = row
+  formOpen.value = true
+}
+
 onMounted(async () => {
   await u.fetchMeta()
   await u.refresh()
@@ -64,7 +77,7 @@ async function onDelete(row: UserRow) {
       <div class="flex gap-2.5 items-center">
         <MButton variant="secondary"><MIcon name="importIn" :size="16" />Import CSV</MButton>
         <MButton variant="secondary"><MIcon name="exportOut" :size="16" />Export CSV</MButton>
-        <MButton variant="primary"><MIcon name="plus" :size="16" />Add User</MButton>
+        <MButton variant="primary" @click="openAdd"><MIcon name="plus" :size="16" />Add User</MButton>
       </div>
     </div>
 
@@ -98,7 +111,7 @@ async function onDelete(row: UserRow) {
             <span class="med-count-pill">{{ selectedCount }}</span>selected
           </span>
           <div class="w-px h-[22px] bg-[var(--border-default)]" />
-          <MButton variant="danger" size="sm" @click="u.bulk('delete')"><MIcon name="trash" :size="15" />Bulk Delete</MButton>
+          <MButton variant="danger" size="sm" @click="bulkOpen = true"><MIcon name="trash" :size="15" />Bulk Delete</MButton>
           <MButton variant="secondary" size="sm" @click="u.bulk('activate')"><MIcon name="activate" :size="15" />Activate</MButton>
           <MButton variant="secondary" size="sm" @click="u.bulk('deactivate')"><MIcon name="deactivate" :size="15" />Deactivate</MButton>
           <button class="med-clear" @click="u.clearSelection()"><MIcon name="x" :size="14" />Clear</button>
@@ -169,7 +182,7 @@ async function onDelete(row: UserRow) {
               </td>
               <td class="med-td med-td--right">
                 <div class="flex gap-2 items-center justify-end">
-                  <MIconButton title="Edit" size="sm"><MIcon name="edit" :size="15" /></MIconButton>
+                  <MIconButton title="Edit" size="sm" @click="openEdit(row)"><MIcon name="edit" :size="15" /></MIconButton>
                   <MIconButton title="Time Table" size="sm"><MIcon name="timetable" :size="15" /></MIconButton>
                   <MIconButton
                     :title="row.status === 'active' ? 'Deactivate' : 'Activate'"
@@ -233,5 +246,20 @@ async function onDelete(row: UserRow) {
         </div>
       </div>
     </div>
+
+    <UserFormModal
+      v-model="formOpen"
+      :record="editRecord"
+      :roles="u.meta.value?.roles ?? []"
+      :clinics="u.meta.value?.clinics ?? []"
+      :branches="u.meta.value?.branches ?? []"
+      :save="u.save"
+    />
+    <BulkDeleteModal
+      v-model="bulkOpen"
+      :count="selectedCount"
+      noun="user"
+      :runner="u.bulkDeleteWithProgress"
+    />
   </div>
 </template>

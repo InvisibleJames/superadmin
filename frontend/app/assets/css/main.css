@@ -384,3 +384,45 @@ tbody tr[data-selected='true'] .med-td--check {
   color: var(--teal-300);
   font-weight: 600;
 }
+
+/* ============================================================
+   Form modals (Add / Edit)
+   ============================================================ */
+.med-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.med-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.med-field--full {
+  grid-column: 1 / -1;
+}
+.med-field > label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 7px;
+}
+.med-form-errors {
+  margin: 16px 0 0;
+  padding: 10px 12px;
+  list-style: none;
+  background: var(--tint-danger);
+  border: 1px solid rgba(244, 71, 90, 0.3);
+  border-radius: var(--radius-md);
+}
+.med-form-errors li {
+  font-size: 12.5px;
+  color: var(--danger-500);
+  line-height: 1.5;
+}
+@media (max-width: 560px) {
+  .med-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

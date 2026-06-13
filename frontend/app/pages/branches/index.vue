@@ -5,6 +5,19 @@ const b = useBranches()
 const ready = ref(false)
 const rowsMenuOpen = ref(false)
 
+const formOpen = ref(false)
+const editRecord = ref<BranchRow | null>(null)
+const bulkOpen = ref(false)
+
+function openAdd() {
+  editRecord.value = null
+  formOpen.value = true
+}
+function openEdit(row: BranchRow) {
+  editRecord.value = row
+  formOpen.value = true
+}
+
 onMounted(async () => {
   await b.fetchMeta()
   await b.refresh()
@@ -49,7 +62,7 @@ async function onDelete(row: BranchRow) {
       </div>
       <div class="flex gap-2.5 items-center">
         <MButton variant="secondary"><MIcon name="exportOut" :size="16" />Export CSV</MButton>
-        <MButton variant="primary"><MIcon name="plus" :size="16" />Add Branch</MButton>
+        <MButton variant="primary" @click="openAdd"><MIcon name="plus" :size="16" />Add Branch</MButton>
       </div>
     </div>
 
@@ -79,7 +92,7 @@ async function onDelete(row: BranchRow) {
             <span class="med-count-pill">{{ selectedCount }}</span>selected
           </span>
           <div class="w-px h-[22px] bg-[var(--border-default)]" />
-          <MButton variant="danger" size="sm" @click="b.bulk('delete')"><MIcon name="trash" :size="15" />Bulk Delete</MButton>
+          <MButton variant="danger" size="sm" @click="bulkOpen = true"><MIcon name="trash" :size="15" />Bulk Delete</MButton>
           <MButton variant="secondary" size="sm" @click="b.bulk('activate')"><MIcon name="activate" :size="15" />Activate</MButton>
           <MButton variant="secondary" size="sm" @click="b.bulk('deactivate')"><MIcon name="deactivate" :size="15" />Deactivate</MButton>
           <button class="med-clear" @click="b.clearSelection()"><MIcon name="x" :size="14" />Clear</button>
@@ -138,7 +151,7 @@ async function onDelete(row: BranchRow) {
               </td>
               <td class="med-td med-td--right">
                 <div class="flex gap-2 items-center justify-end">
-                  <MIconButton title="Edit" size="sm"><MIcon name="edit" :size="15" /></MIconButton>
+                  <MIconButton title="Edit" size="sm" @click="openEdit(row)"><MIcon name="edit" :size="15" /></MIconButton>
                   <MIconButton :title="row.status === 'active' ? 'Deactivate' : 'Activate'" size="sm" @click="b.toggleStatus(row)">
                     <MIcon name="power" :size="15" />
                   </MIconButton>
@@ -187,6 +200,8 @@ async function onDelete(row: BranchRow) {
         </div>
       </div>
     </div>
+    <BranchFormModal v-model="formOpen" :record="editRecord" :clinics="b.meta.value?.clinics ?? []" :save="b.save" />
+    <BulkDeleteModal v-model="bulkOpen" :count="selectedCount" noun="branch" :runner="b.bulkDeleteWithProgress" />
   </div>
 </template>
 

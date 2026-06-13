@@ -175,6 +175,29 @@ export function useSaUsers() {
     },
   )
 
+
+  async function save(payload: Record<string, unknown>, id?: number) {
+    if (id) await api(`/sa-users/${id}`, { method: 'PUT', body: payload })
+    else await api('/sa-users', { method: 'POST', body: payload })
+    await refresh()
+  }
+
+  async function bulkDeleteWithProgress(onProgress: (done: number, total: number) => void) {
+    const ids = [...selected.value]
+    const total = ids.length
+    let done = 0
+    for (const id of ids) {
+      try {
+        await api(`/sa-users/${id}`, { method: 'DELETE' })
+      } catch {
+        // skip records the API refuses (e.g. a protected super admin)
+      }
+      onProgress(++done, total)
+    }
+    clearSelection()
+    await refresh()
+  }
+
   return {
     filters,
     sort,
@@ -203,5 +226,7 @@ export function useSaUsers() {
     bulk,
     deleteSaUser,
     toggleStatus,
+    save,
+    bulkDeleteWithProgress,
   }
 }

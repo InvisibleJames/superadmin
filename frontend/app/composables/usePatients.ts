@@ -21,6 +21,7 @@ export interface PatientStats {
 }
 
 interface PatientMeta {
+  clinics: { id: number; name: string }[]
   branches: { id: number; name: string }[]
   genders: { value: string; label: string }[]
   statuses: { value: string; label: string }[]
@@ -83,11 +84,12 @@ export function usePatients() {
 
   async function fetchMeta() {
     const full = await api<{
+      clinics: PatientMeta['clinics']
       branches: PatientMeta['branches']
       genders: PatientMeta['genders']
       statuses: PatientMeta['statuses']
     }>('/meta')
-    meta.value = { branches: full.branches, genders: full.genders, statuses: full.statuses }
+    meta.value = { clinics: full.clinics, branches: full.branches, genders: full.genders, statuses: full.statuses }
   }
 
   async function refresh() {
@@ -189,6 +191,29 @@ export function usePatients() {
     },
   )
 
+
+  async function save(payload: Record<string, unknown>, id?: number) {
+    if (id) await api(`/patients/${id}`, { method: 'PUT', body: payload })
+    else await api('/patients', { method: 'POST', body: payload })
+    await refresh()
+  }
+
+  async function bulkDeleteWithProgress(onProgress: (done: number, total: number) => void) {
+    const ids = [...selected.value]
+    const total = ids.length
+    let done = 0
+    for (const id of ids) {
+      try {
+        await api(`/patients/${id}`, { method: 'DELETE' })
+      } catch {
+        // skip records the API refuses (e.g. a protected super admin)
+      }
+      onProgress(++done, total)
+    }
+    clearSelection()
+    await refresh()
+  }
+
   return {
     filters,
     sort,
@@ -217,5 +242,7 @@ export function usePatients() {
     bulk,
     deletePatient,
     toggleStatus,
+    save,
+    bulkDeleteWithProgress,
   }
 }
