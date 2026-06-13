@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\ClinicController;
 use App\Http\Controllers\Api\MetaController;
 use App\Http\Controllers\Api\PatientController;
+use App\Http\Controllers\Api\SaUserController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,4 +34,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patients/stats', [PatientController::class, 'stats']);
     Route::post('/patients/bulk', [PatientController::class, 'bulk']);
     Route::apiResource('patients', PatientController::class);
+
+    Route::get('/sa-users/stats', [SaUserController::class, 'stats']);
+    Route::post('/sa-users/bulk', [SaUserController::class, 'bulk']);
+    Route::apiResource('sa-users', SaUserController::class)->parameters(['sa-users' => 'saUser']);
 });

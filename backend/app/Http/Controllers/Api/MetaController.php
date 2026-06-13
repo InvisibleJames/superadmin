@@ -33,6 +33,10 @@ class MetaController extends Controller
                 ['value' => 'Male', 'label' => 'Male'],
                 ['value' => 'Female', 'label' => 'Female'],
             ],
+            'admin_roles' => collect(['Super Admin', 'Admin', 'Support', 'Auditor', 'Read-only'])
+                ->map(fn ($r) => ['value' => $r, 'label' => $r])
+                ->prepend(['value' => 'all', 'label' => 'All'])
+                ->values(),
             'statuses' => [
                 ['value' => 'all', 'label' => 'All'],
                 ['value' => 'active', 'label' => 'Active'],
