@@ -1,0 +1,19 @@
+# Extracted handoff working copy (zip is kept in repo)
+/handoff_extracted/
+
+# Node
+node_modules/
+.nuxt/
+.output/
+dist/
+
+# Laravel
+/backend/vendor/
+/backend/node_modules/
+/backend/.env
+/backend/storage/*.key
+/backend/public/storage
+/backend/.phpunit.result.cache
+
+# OS
+.DS_Store
