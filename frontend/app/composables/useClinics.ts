@@ -4,6 +4,8 @@ export interface ClinicRow {
   no: string | null
   name: string
   province: string | null
+  district: string | null
+  subdistrict: string | null
   status: 'active' | 'inactive'
   branches_count: number
   patients_count: number

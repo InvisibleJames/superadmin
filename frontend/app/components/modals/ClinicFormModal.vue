@@ -12,7 +12,14 @@ const isEdit = computed(() => !!props.record)
 const saving = ref(false)
 const errors = ref<string[]>([])
 
-const form = reactive({ name: '', code: '', no: '', province: '', status: 'active' })
+const form = reactive({ name: '', code: '', no: '', province: '', district: '', subdistrict: '', status: 'active' })
+
+const address = computed(() => ({ province: form.province || null, district: form.district || null, subdistrict: form.subdistrict || null }))
+function onAddress(a: { province: string | null; district: string | null; subdistrict: string | null }) {
+  form.province = a.province ?? ''
+  form.district = a.district ?? ''
+  form.subdistrict = a.subdistrict ?? ''
+}
 
 watch(
   () => props.modelValue,
@@ -24,6 +31,8 @@ watch(
     form.code = r?.code ?? ''
     form.no = r?.no ?? ''
     form.province = r?.province ?? ''
+    form.district = r?.district ?? ''
+    form.subdistrict = r?.subdistrict ?? ''
     form.status = r?.status ?? 'active'
   },
 )
@@ -38,6 +47,8 @@ async function onSave() {
         code: form.code,
         no: form.no || null,
         province: form.province || null,
+        district: form.district || null,
+        subdistrict: form.subdistrict || null,
         status: form.status,
       },
       props.record?.id,
@@ -74,10 +85,7 @@ async function onSave() {
         <label>เลขที่ (No.)</label>
         <MInput v-model="form.no" full placeholder="100000" />
       </div>
-      <div class="med-field">
-        <label>จังหวัด</label>
-        <MInput v-model="form.province" full placeholder="Bangkok" />
-      </div>
+      <ThaiAddressSelect :model-value="address" @update:model-value="onAddress" />
       <div class="med-field">
         <label>สถานะ</label>
         <MSelect v-model="form.status" :options="[{ value: 'active', label: 'Active' }, { value: 'inactive', label: 'Inactive' }]" />

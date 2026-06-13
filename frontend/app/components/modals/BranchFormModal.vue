@@ -13,12 +13,19 @@ const isEdit = computed(() => !!props.record)
 const saving = ref(false)
 const errors = ref<string[]>([])
 
-const form = reactive({ name: '', code: '', clinic_id: '' as string | number, province: '', phone: '', status: 'active' })
+const form = reactive({ name: '', code: '', clinic_id: '' as string | number, province: '', district: '', subdistrict: '', phone: '', status: 'active' })
 
 const clinicOptions = computed(() => [
   { value: '', label: '— เลือกคลินิก —' },
   ...props.clinics.map((c) => ({ value: c.id, label: c.name })),
 ])
+
+const address = computed(() => ({ province: form.province || null, district: form.district || null, subdistrict: form.subdistrict || null }))
+function onAddress(a: { province: string | null; district: string | null; subdistrict: string | null }) {
+  form.province = a.province ?? ''
+  form.district = a.district ?? ''
+  form.subdistrict = a.subdistrict ?? ''
+}
 
 watch(
   () => props.modelValue,
@@ -30,6 +37,8 @@ watch(
     form.code = r?.code ?? ''
     form.clinic_id = r?.clinic?.id ?? ''
     form.province = r?.province ?? ''
+    form.district = r?.district ?? ''
+    form.subdistrict = r?.subdistrict ?? ''
     form.phone = r?.phone ?? ''
     form.status = r?.status ?? 'active'
   },
@@ -45,6 +54,8 @@ async function onSave() {
         code: form.code,
         clinic_id: form.clinic_id === '' ? null : form.clinic_id,
         province: form.province || null,
+        district: form.district || null,
+        subdistrict: form.subdistrict || null,
         phone: form.phone || null,
         status: form.status,
       },
@@ -82,10 +93,7 @@ async function onSave() {
         <label>รหัส (Code)</label>
         <MInput v-model="form.code" full placeholder="BR100" />
       </div>
-      <div class="med-field">
-        <label>จังหวัด</label>
-        <MInput v-model="form.province" full placeholder="Bangkok" />
-      </div>
+      <ThaiAddressSelect :model-value="address" @update:model-value="onAddress" />
       <div class="med-field">
         <label>โทรศัพท์</label>
         <MInput v-model="form.phone" full placeholder="+66 2-xxx-xxxx" />

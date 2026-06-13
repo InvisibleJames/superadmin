@@ -119,6 +119,8 @@ class BranchController extends Controller
             'code' => ['required', 'string', 'max:255', Rule::unique('branches', 'code')->ignore($branch)],
             'name' => ['required', 'string', 'max:255'],
             'province' => ['nullable', 'string', 'max:255'],
+            'district' => ['nullable', 'string', 'max:255'],
+            'subdistrict' => ['nullable', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:64'],
             'status' => ['required', Rule::in(['active', 'inactive'])],
         ]);
