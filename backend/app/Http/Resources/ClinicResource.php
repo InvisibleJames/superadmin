@@ -17,7 +17,7 @@ class ClinicResource extends JsonResource
             'province' => $this->province,
             'status' => $this->status,
             'branches_count' => $this->branches_count ?? $this->branches()->count(),
-            'patients_count' => (int) $this->patients_count,
+            'patients_count' => $this->patients_count ?? $this->patients()->count(),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }

@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             ClinicSeeder::class,
             BranchSeeder::class,
             UserSeeder::class,
+            PatientSeeder::class,
         ]);
     }
 }

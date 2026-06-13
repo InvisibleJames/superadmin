@@ -28,6 +28,11 @@ class MetaController extends Controller
             'clinics' => Clinic::orderBy('name')->get(['id', 'name']),
             'branches' => Branch::orderBy('name')->get(['id', 'name', 'clinic_id']),
             'provinces' => $provinces,
+            'genders' => [
+                ['value' => 'all', 'label' => 'All'],
+                ['value' => 'Male', 'label' => 'Male'],
+                ['value' => 'Female', 'label' => 'Female'],
+            ],
             'statuses' => [
                 ['value' => 'all', 'label' => 'All'],
                 ['value' => 'active', 'label' => 'Active'],

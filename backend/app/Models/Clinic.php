@@ -7,11 +7,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Clinic extends Model
 {
-    protected $fillable = ['code', 'no', 'name', 'province', 'patients_count', 'status'];
+    protected $fillable = ['code', 'no', 'name', 'province', 'status'];
 
     public function branches(): HasMany
     {
         return $this->hasMany(Branch::class);
+    }
+
+    public function patients(): HasMany
+    {
+        return $this->hasMany(Patient::class);
     }
 
     public function users(): HasMany

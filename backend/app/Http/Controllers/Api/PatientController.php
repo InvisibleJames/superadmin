@@ -3,26 +3,25 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ClinicResource;
-use App\Models\Branch;
-use App\Models\Clinic;
+use App\Http\Resources\PatientResource;
+use App\Models\Patient;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-class ClinicController extends Controller
+class PatientController extends Controller
 {
     /** Columns that may be sorted from the UI. */
     private const SORTABLE = [
         'name' => 'name',
         'status' => 'status',
         'created' => 'created_at',
-        'patients' => 'patients_count',
+        'last_visit' => 'last_visit_at',
     ];
 
     public function index(Request $request): JsonResponse
     {
-        $query = Clinic::query()->withCount(['branches', 'patients']);
+        $query = Patient::query()->with(['clinic', 'branch']);
 
         $this->applyFilters($query, $request);
 
@@ -33,46 +32,48 @@ class ClinicController extends Controller
 
         $perPage = max(1, min((int) $request->integer('per_page', 10), 100));
 
-        return ClinicResource::collection($query->paginate($perPage)->withQueryString())->response();
+        return PatientResource::collection($query->paginate($perPage)->withQueryString())->response();
     }
 
     public function stats(Request $request): JsonResponse
     {
-        $base = Clinic::query();
+        $base = Patient::query();
         $this->applyFilters($base, $request, includeStatus: false);
+
+        $monthStart = now()->startOfMonth();
 
         return response()->json([
             'total' => (clone $base)->count(),
             'active' => (clone $base)->where('status', 'active')->count(),
             'inactive' => (clone $base)->where('status', 'inactive')->count(),
-            'branches' => Branch::count(),
+            'new_this_month' => (clone $base)->where('created_at', '>=', $monthStart)->count(),
         ]);
     }
 
-    public function show(Clinic $clinic): ClinicResource
+    public function show(Patient $patient): PatientResource
     {
-        return new ClinicResource($clinic->loadCount(['branches', 'patients']));
+        return new PatientResource($patient->load(['clinic', 'branch']));
     }
 
     public function store(Request $request): JsonResponse
     {
-        $clinic = Clinic::create($this->validateClinic($request));
+        $patient = Patient::create($this->validatePatient($request));
 
-        return (new ClinicResource($clinic->loadCount(['branches', 'patients'])))->response()->setStatusCode(201);
+        return (new PatientResource($patient->load(['clinic', 'branch'])))->response()->setStatusCode(201);
     }
 
-    public function update(Request $request, Clinic $clinic): ClinicResource
+    public function update(Request $request, Patient $patient): PatientResource
     {
-        $clinic->update($this->validateClinic($request, $clinic));
+        $patient->update($this->validatePatient($request, $patient));
 
-        return new ClinicResource($clinic->loadCount(['branches', 'patients']));
+        return new PatientResource($patient->load(['clinic', 'branch']));
     }
 
-    public function destroy(Clinic $clinic): JsonResponse
+    public function destroy(Patient $patient): JsonResponse
     {
-        $clinic->delete();
+        $patient->delete();
 
-        return response()->json(['message' => 'Clinic deleted.']);
+        return response()->json(['message' => 'Patient deleted.']);
     }
 
     public function bulk(Request $request): JsonResponse
@@ -80,10 +81,10 @@ class ClinicController extends Controller
         $validated = $request->validate([
             'action' => ['required', Rule::in(['activate', 'deactivate', 'delete'])],
             'ids' => ['required', 'array', 'min:1'],
-            'ids.*' => ['integer', 'exists:clinics,id'],
+            'ids.*' => ['integer', 'exists:patients,id'],
         ]);
 
-        $query = Clinic::whereIn('id', $validated['ids']);
+        $query = Patient::whereIn('id', $validated['ids']);
 
         $affected = match ($validated['action']) {
             'activate' => $query->update(['status' => 'active']),
@@ -91,7 +92,7 @@ class ClinicController extends Controller
             'delete' => $query->delete(),
         };
 
-        return response()->json(['message' => "{$affected} clinic(s) updated.", 'affected' => $affected]);
+        return response()->json(['message' => "{$affected} patient(s) updated.", 'affected' => $affected]);
     }
 
     private function applyFilters($query, Request $request, bool $includeStatus = true): void
@@ -99,8 +100,8 @@ class ClinicController extends Controller
         if ($q = trim((string) $request->string('q'))) {
             $query->where(function ($sub) use ($q) {
                 $sub->where('name', 'like', "%{$q}%")
-                    ->orWhere('code', 'like', "%{$q}%")
-                    ->orWhere('province', 'like', "%{$q}%");
+                    ->orWhere('hn', 'like', "%{$q}%")
+                    ->orWhere('phone', 'like', "%{$q}%");
             });
         }
 
@@ -108,20 +109,26 @@ class ClinicController extends Controller
             $query->where('status', $status);
         }
 
-        if ($province = trim((string) $request->string('province'))) {
-            if ($province !== 'all') {
-                $query->where('province', $province);
-            }
+        if (($gender = $request->string('gender')->toString()) && $gender !== 'all') {
+            $query->where('gender', $gender);
+        }
+
+        if ($branchId = $request->integer('branch_id')) {
+            $query->where('branch_id', $branchId);
         }
     }
 
-    private function validateClinic(Request $request, ?Clinic $clinic = null): array
+    private function validatePatient(Request $request, ?Patient $patient = null): array
     {
         return $request->validate([
-            'code' => ['required', 'string', 'max:255', Rule::unique('clinics', 'code')->ignore($clinic)],
-            'no' => ['nullable', 'string', 'max:255'],
+            'hn' => ['required', 'string', 'max:255', Rule::unique('patients', 'hn')->ignore($patient)],
             'name' => ['required', 'string', 'max:255'],
-            'province' => ['nullable', 'string', 'max:255'],
+            'gender' => ['nullable', Rule::in(['Male', 'Female'])],
+            'age' => ['nullable', 'integer', 'min:0', 'max:150'],
+            'clinic_id' => ['nullable', 'exists:clinics,id'],
+            'branch_id' => ['nullable', 'exists:branches,id'],
+            'phone' => ['nullable', 'string', 'max:64'],
+            'last_visit_at' => ['nullable', 'date'],
             'status' => ['required', Rule::in(['active', 'inactive'])],
         ]);
     }

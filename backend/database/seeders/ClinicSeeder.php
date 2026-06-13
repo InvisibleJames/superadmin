@@ -27,7 +27,6 @@ class ClinicSeeder extends Seeder
                     'no' => (string) (100000 + $i),
                     'name' => $name,
                     'province' => $province,
-                    'patients_count' => max(0, 1240 - $i * 73),
                     'status' => ($i % 6 === 2 || $i % 6 === 5) ? 'inactive' : 'active',
                     'created_at' => "2025-{$mo}-{$day} 09:00:00",
                 ],
