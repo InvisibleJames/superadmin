@@ -109,7 +109,14 @@ Geist / Geist Mono, 8px radius, 150ms ease-out.
 
 ## 5. Running it
 
-See [`README.md`](./README.md) for full steps. TL;DR:
+**Fastest — Docker (needs only Docker):**
+
+```bash
+docker compose up --build      # MySQL + API + console, auto-migrate + seed
+# → http://localhost:3000  (admin@medreco.com / password)
+```
+
+See [`README.md`](./README.md) for full manual steps. TL;DR:
 
 ```bash
 # backend

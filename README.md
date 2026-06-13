@@ -49,6 +49,26 @@ dark-tuned shadows, and 150ms ease-out motion.
 
 ---
 
+## Quickstart with Docker (one command)
+
+Needs only Docker. Builds MySQL + the Laravel API + the Nuxt console, runs
+migrations and seeders automatically:
+
+```bash
+docker compose up --build
+```
+
+- Console → http://localhost:3000 (sign in with `admin@medreco.com` / `password`)
+- API → http://localhost:8000
+- MySQL → localhost:3306 (db `medreco`, user `medreco` / `secret`)
+
+Stop with `docker compose down` (add `-v` to also wipe the database volume).
+
+> For the Authentik SSO stack, see `docker-compose.authentik.yml` and
+> `docs/authentik-setup.md`. Manual (non-Docker) setup is below.
+
+---
+
 ## Backend setup (Laravel + MySQL)
 
 ```bash

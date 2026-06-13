@@ -1,0 +1,73 @@
+# MedReco Super Admin — full stack in one command.
+#
+#   docker compose up --build
+#
+# Then open http://localhost:3000 and sign in with admin@medreco.com / password.
+#
+#   Frontend (Nuxt)   → http://localhost:3000
+#   Backend  (Laravel)→ http://localhost:8000
+#   MySQL             → localhost:3306  (db: medreco, user: medreco / secret)
+#
+# The browser runs on the host, so the frontend talks to the API at
+# localhost:8000 (host-mapped), not the internal service name.
+
+services:
+  mysql:
+    image: mysql:8
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: medreco
+      MYSQL_USER: medreco
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-psecret']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      APP_NAME: MedReco
+      APP_ENV: local
+      APP_DEBUG: 'true'
+      APP_URL: http://localhost:8000
+      FRONTEND_URL: http://localhost:3000
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: '3306'
+      DB_DATABASE: medreco
+      DB_USERNAME: medreco
+      DB_PASSWORD: secret
+      # Keep sessions/cache/queue off the DB so the app is up before migrations.
+      SESSION_DRIVER: file
+      CACHE_STORE: file
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: log
+    ports:
+      - '8000:8000'
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    environment:
+      # The browser reaches the API via the host-mapped port.
+      NUXT_PUBLIC_API_BASE: http://localhost:8000/api
+      PORT: '3000'
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+
+volumes:
+  mysql-data:
+    driver: local

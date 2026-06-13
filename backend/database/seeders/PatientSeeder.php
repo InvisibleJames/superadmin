@@ -40,18 +40,20 @@ class PatientSeeder extends Seeder
                 $vm = str_pad((string) (($seq % 5) + 2), 2, '0', STR_PAD_LEFT);
                 $vd = str_pad((string) (($seq * 5) % 27 + 1), 2, '0', STR_PAD_LEFT);
 
-                Patient::create([
-                    'hn' => 'HN-' . $hn,
-                    'name' => "{$first} {$last}",
-                    'gender' => $gender,
-                    'age' => $age,
-                    'clinic_id' => $clinic->id,
-                    'branch_id' => $branch?->id,
-                    'phone' => '08' . ($seq % 9) . '-' . str_pad((string) (1000 + $seq * 7), 4, '0', STR_PAD_LEFT) . '-' . str_pad((string) (100 + $seq * 3), 4, '0', STR_PAD_LEFT),
-                    'last_visit_at' => "2025-{$vm}-{$vd}",
-                    'status' => $status,
-                    'created_at' => "2025-{$cm}-{$cd} 09:00:00",
-                ]);
+                Patient::updateOrCreate(
+                    ['hn' => 'HN-' . $hn],
+                    [
+                        'name' => "{$first} {$last}",
+                        'gender' => $gender,
+                        'age' => $age,
+                        'clinic_id' => $clinic->id,
+                        'branch_id' => $branch?->id,
+                        'phone' => '08' . ($seq % 9) . '-' . str_pad((string) (1000 + $seq * 7), 4, '0', STR_PAD_LEFT) . '-' . str_pad((string) (100 + $seq * 3), 4, '0', STR_PAD_LEFT),
+                        'last_visit_at' => "2025-{$vm}-{$vd}",
+                        'status' => $status,
+                        'created_at' => "2025-{$cm}-{$cd} 09:00:00",
+                    ],
+                );
 
                 $hn += 137;
                 $seq++;
