@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\ClinicController;
 use App\Http\Controllers\Api\MetaController;
 use App\Http\Controllers\Api\UserController;
@@ -21,4 +22,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/clinics/stats', [ClinicController::class, 'stats']);
     Route::post('/clinics/bulk', [ClinicController::class, 'bulk']);
     Route::apiResource('clinics', ClinicController::class);
+
+    Route::get('/branches/stats', [BranchController::class, 'stats']);
+    Route::post('/branches/bulk', [BranchController::class, 'bulk']);
+    Route::apiResource('branches', BranchController::class);
 });
