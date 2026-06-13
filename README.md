@@ -117,6 +117,29 @@ middleware redirects unauthenticated visitors to `/login`.
 
 ---
 
+## Testing
+
+**Backend feature tests** (PHPUnit, runs on an in-memory SQLite DB — no setup):
+
+```bash
+cd backend
+php artisan test            # 33 tests: auth, users, clinics, branches, patients, SA users, meta, OAuth
+```
+
+**API smoke test** — boots the API on a throwaway SQLite DB, logs in, and
+exercises every endpoint, then tears down (never touches your MySQL data):
+
+```bash
+./scripts/smoke.sh          # 18 checks across auth + all resources
+PORT=8899 ./scripts/smoke.sh
+```
+
+**Frontend** builds type-check the pages/components:
+
+```bash
+cd frontend && npm run build
+```
+
 ## Notes
 
 - The local dev `.env` in this repo may use SQLite for quick verification, but

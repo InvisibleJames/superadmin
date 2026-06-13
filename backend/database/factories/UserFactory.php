@@ -29,6 +29,8 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'status' => 'active',
+            'is_super_admin' => false,
             'remember_token' => Str::random(10),
         ];
     }
@@ -41,5 +43,17 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    /** A platform Super Admin account. */
+    public function superAdmin(): static
+    {
+        return $this->state(fn () => ['is_super_admin' => true]);
+    }
+
+    /** An inactive account. */
+    public function inactive(): static
+    {
+        return $this->state(fn () => ['status' => 'inactive']);
     }
 }
