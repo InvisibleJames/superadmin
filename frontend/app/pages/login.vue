@@ -11,6 +11,9 @@ const password = ref('password')
 const loading = ref(false)
 const error = ref('')
 
+const forgotLoading = ref(false)
+const forgotError = ref('')
+
 async function onLogin() {
   error.value = ''
   loading.value = true
@@ -21,6 +24,23 @@ async function onLogin() {
     error.value = e?.data?.message || 'The provided credentials are incorrect.'
   } finally {
     loading.value = false
+  }
+}
+
+async function onSendReset() {
+  forgotError.value = ''
+  if (!email.value) {
+    forgotError.value = 'Enter your email first.'
+    return
+  }
+  forgotLoading.value = true
+  try {
+    await useApi()('/auth/forgot-password', { method: 'POST', body: { email: email.value } })
+    mode.value = 'sent'
+  } catch (e: any) {
+    forgotError.value = e?.data?.message || 'Could not send the reset link. Try again.'
+  } finally {
+    forgotLoading.value = false
   }
 }
 </script>
@@ -92,8 +112,11 @@ async function onLogin() {
             <label class="block text-[12.5px] font-medium text-ink-2 mb-2">Email</label>
             <MInput v-model="email" full size="lg" type="email" icon="mail" placeholder="you@medreco.com" />
           </div>
+          <p v-if="forgotError" class="mt-3 text-[12.5px] text-[var(--danger-500)]">{{ forgotError }}</p>
           <div class="mt-6">
-            <MButton variant="primary" size="lg" full @click="mode = 'sent'">ส่งลิงก์รีเซ็ตรหัสผ่าน</MButton>
+            <MButton variant="primary" size="lg" full :disabled="forgotLoading" @click="onSendReset">
+              {{ forgotLoading ? 'กำลังส่ง…' : 'ส่งลิงก์รีเซ็ตรหัสผ่าน' }}
+            </MButton>
           </div>
           <div class="text-center mt-[18px]">
             <span class="text-[13px] text-[var(--text-link)] cursor-pointer" @click="mode = 'signin'">← กลับไปหน้าเข้าสู่ระบบ</span>
