@@ -1,0 +1,45 @@
+/* ============================================================
+   MedReco — base reset & primitives
+   Lightweight; sets app background, default text, scrollbars.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font: var(--text-body);
+  color: var(--text-primary);
+  background: var(--bg-app);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Tabular numbers everywhere by default — tables, stats, counts line up */
+body { font-variant-numeric: tabular-nums; }
+
+::selection { background: rgba(24, 199, 181, 0.30); color: #fff; }
+
+/* Custom scrollbars — slim, dark, unobtrusive */
+* { scrollbar-width: thin; scrollbar-color: var(--neutral-700) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: var(--neutral-700);
+  border-radius: var(--radius-pill);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: var(--neutral-600); background-clip: content-box; }
+
+a { color: var(--text-link); text-decoration: none; }
+
+/* Utility: mono numerics */
+.ds-mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* Utility: uppercase eyebrow / section caption */
+.ds-eyebrow {
+  font: var(--fw-semibold) var(--fs-2xs)/1 var(--font-sans);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}

@@ -1,0 +1,51 @@
+/* ============================================================
+   MedReco — Typography tokens
+   UI: Geist (modern grotesque, Linear/Stripe feel)
+   Mono: Geist Mono (IDs, codes, counts, timestamps)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* Families */
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, monospace;
+
+  /* Weights */
+  --fw-regular: 400; /* @kind other */
+  --fw-medium: 500; /* @kind other */
+  --fw-semibold: 600; /* @kind other */
+  --fw-bold: 700; /* @kind other */
+
+  /* Type scale (px) — dense enterprise UI */
+  --fs-display: 32px;   /* page hero / big stat numbers */
+  --fs-h1: 24px;        /* page title */
+  --fs-h2: 19px;        /* section / card title */
+  --fs-h3: 16px;        /* sub-section */
+  --fs-body: 14px;      /* default body / table cells */
+  --fs-sm: 13px;        /* secondary / inputs */
+  --fs-xs: 12px;        /* labels, badges, meta */
+  --fs-2xs: 11px;       /* eyebrow / sidebar section caps */
+
+  /* Line heights */
+  --lh-tight: 1.15; /* @kind other */
+  --lh-snug: 1.3; /* @kind other */
+  --lh-normal: 1.5; /* @kind other */
+  --lh-relaxed: 1.65; /* @kind other */
+
+  /* Letter spacing */
+  --ls-tight: -0.02em; /* @kind other */
+  --ls-snug: -0.01em; /* @kind other */
+  --ls-normal: 0; /* @kind other */
+  --ls-wide: 0.04em; /* @kind other */
+  --ls-caps: 0.08em; /* @kind other */
+
+  /* Semantic text roles */
+  --text-display:   var(--fw-bold) var(--fs-display)/var(--lh-tight) var(--font-sans);
+  --text-h1:        var(--fw-semibold) var(--fs-h1)/var(--lh-tight) var(--font-sans);
+  --text-h2:        var(--fw-semibold) var(--fs-h2)/var(--lh-snug) var(--font-sans);
+  --text-h3:        var(--fw-semibold) var(--fs-h3)/var(--lh-snug) var(--font-sans);
+  --text-body:      var(--fw-regular) var(--fs-body)/var(--lh-normal) var(--font-sans);
+  --text-body-med:  var(--fw-medium) var(--fs-body)/var(--lh-normal) var(--font-sans);
+  --text-label:     var(--fw-medium) var(--fs-xs)/var(--lh-snug) var(--font-sans);
+}

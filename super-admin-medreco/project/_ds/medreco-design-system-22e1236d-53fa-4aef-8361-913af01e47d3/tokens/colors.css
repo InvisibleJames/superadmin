@@ -1,0 +1,108 @@
+/* ============================================================
+   MedReco — Color tokens
+   Dark-first enterprise palette. Base values + semantic aliases.
+   ============================================================ */
+
+:root {
+  /* ---- Brand: cloud gradient (blue → teal → green) ---- */
+  --teal-300: #4FE0D0;
+  --teal-400: #2DD4C0;
+  --teal-500: #18C7B5;   /* primary accent */
+  --teal-600: #12A899;
+  --teal-700: #0E8678;
+
+  --blue-300: #6FA8FB;
+  --blue-400: #4F95FA;
+  --blue-500: #2D7FF9;   /* secondary accent */
+  --blue-600: #1F6AE0;
+  --blue-700: #1857BC;
+
+  --green-500: #29D391;  /* success-leaning brand green */
+
+  /* ---- Neutral scale (cool, slightly blue-tinted darks) ---- */
+  --neutral-950: #0B0F14;  /* app background — "black" */
+  --neutral-925: #0D1218;  /* sidebar */
+  --neutral-900: #10161D;
+  --neutral-850: #141A22;  /* card / surface — "charcoal" */
+  --neutral-800: #1A212B;  /* elevated surface, hover */
+  --neutral-750: #222B36;  /* input, raised hover */
+  --neutral-700: #2B3540;
+  --neutral-600: #3A4651;
+  --neutral-500: #4E5A66;
+  --neutral-400: #6B7785;
+  --neutral-300: #8A97A6;
+  --neutral-200: #A7B4C2;
+  --neutral-100: #CDD6E0;
+  --neutral-50:  #EAF0F6;
+  --white:       #FFFFFF;
+
+  /* ---- Semantic status ---- */
+  --success-500: #29D391;
+  --success-600: #1FB87C;
+  --warning-500: #F5A524;
+  --warning-600: #DB8E12;
+  --danger-500:  #F4475A;
+  --danger-600:  #E12E43;
+  --info-500:    #2D7FF9;
+
+  /* ---- Role accent hues ---- */
+  --role-owner:    #F5A524;  /* Business Owner — amber */
+  --role-director: #18C7B5;  /* Business Director — teal */
+  --role-doctor:   #2DD4C0;  /* Doctor — cyan-teal */
+  --role-manager:  #8B5CF6;  /* Manager — violet */
+  --role-staff:    #2D7FF9;  /* Staff — blue */
+
+  /* ============================================================
+     SEMANTIC ALIASES — reach for these in product code
+     ============================================================ */
+
+  /* Backgrounds / surfaces */
+  --bg-app:          var(--neutral-950);
+  --bg-sidebar:      var(--neutral-925);
+  --bg-topbar:       color-mix(in srgb, var(--neutral-925) 88%, transparent);
+  --surface-card:    var(--neutral-850);
+  --surface-raised:  var(--neutral-800);
+  --surface-sunken:  var(--neutral-900);
+  --surface-input:   var(--neutral-900);
+  --surface-hover:   var(--neutral-800);
+  --surface-active:  var(--neutral-750);
+  --overlay-scrim:   rgba(6, 9, 12, 0.66);
+
+  /* Borders */
+  --border-subtle:   #1B232D;
+  --border-default:  #28323E;
+  --border-strong:   #38444F;
+  --border-focus:    var(--teal-500);
+
+  /* Text */
+  --text-primary:    #F2F6FA;
+  --text-secondary:  var(--neutral-200);
+  --text-tertiary:   var(--neutral-400);
+  --text-disabled:   var(--neutral-500);
+  --text-inverse:    var(--neutral-950);
+  --text-accent:     var(--teal-400);
+  --text-link:       var(--blue-400);
+
+  /* Accents */
+  --accent-primary:  var(--teal-500);
+  --accent-primary-hover: var(--teal-400);
+  --accent-secondary: var(--blue-500);
+
+  /* Brand gradients */
+  --grad-brand:      linear-gradient(135deg, var(--blue-500) 0%, var(--teal-500) 60%, var(--green-500) 100%);
+  --grad-brand-soft: linear-gradient(135deg, var(--blue-600) 0%, var(--teal-600) 100%);
+  --grad-cta:        linear-gradient(135deg, var(--teal-500) 0%, var(--green-500) 100%);
+
+  /* Tinted fills (badges, soft buttons) — translucent so they sit on any surface */
+  --tint-teal:    rgba(24, 199, 181, 0.14);
+  --tint-blue:    rgba(45, 127, 249, 0.14);
+  --tint-violet:  rgba(139, 92, 246, 0.16);
+  --tint-amber:   rgba(245, 165, 36, 0.15);
+  --tint-success: rgba(41, 211, 145, 0.14);
+  --tint-danger:  rgba(244, 71, 90, 0.14);
+  --tint-neutral: rgba(138, 151, 166, 0.12);
+
+  /* Focus ring */
+  --ring-accent: 0 0 0 3px rgba(24, 199, 181, 0.30);
+  --ring-danger: 0 0 0 3px rgba(244, 71, 90, 0.28);
+}
